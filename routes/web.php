@@ -8,6 +8,10 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\HospitalController;
+use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\AppointmentController;
+
 Route::get('/', function () {
     return view('auth.login');
 });
@@ -43,5 +47,11 @@ Route::get('/register/success', function () {
         return back()->with('message', 'Verification link sent!');
     })->name('verification.send');
 #});
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::resource('hospitals', HospitalController::class);
+    Route::resource('doctors', DoctorController::class);
+    Route::resource('appointments', AppointmentController::class)->only(['index', 'update', 'destroy']);
+});
 
 require __DIR__.'/auth.php';

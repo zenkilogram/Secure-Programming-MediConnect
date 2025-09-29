@@ -35,9 +35,9 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        $user->sendEmailVerificationNotification();
+        #$user->sendEmailVerificationNotification();
 
         // Redirect to verification notice page
-        return redirect(route('verification.notice', absolute: false));
+        return redirect()->route('verification.notice');
     }
 }
