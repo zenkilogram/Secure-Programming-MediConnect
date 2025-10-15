@@ -13,8 +13,22 @@ class Doctor extends Model
         'name',
         'specialty',
         'hospital_id',
+        'photo',
+        'education',
+        'available_schedule',
     ];
 
+    protected $casts = [
+        'available_schedule' => 'array',
+    ];
+
+    protected $appends = ['photo_url'];
+
+    public function getPhotoUrlAttribute()
+    {
+        return $this->photo ? asset('storage/' . $this->photo) : null;
+    }
+    
     /**
      * The hospital this doctor belongs to.
      */

@@ -13,6 +13,8 @@ class Hospital extends Model
         'name',
         'address',
         'phone',
+        'description',
+        'image',
     ];
 
     /**
@@ -29,5 +31,17 @@ class Hospital extends Model
     public function appointments()
     {
         return $this->hasMany(Appointment::class);
+    }
+
+    public function facilities()
+    {
+        return $this->hasMany(Facility::class);
+    }
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? asset('storage/' . $this->image) : null;
     }
 }
