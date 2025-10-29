@@ -6,12 +6,13 @@ use App\Models\Facility;
 use App\Models\Hospital;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Response;
 
 class FacilityController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'admin']); // only admin can manage facilities
+        $this->middleware(['auth:sanctum', 'admin']); // only admin can manage facilities
     }
 
     public function index()
@@ -34,7 +35,7 @@ class FacilityController extends Controller
             $data['photo'] = $path;
         }
 
-        $facility = $hospital->facilities()->create($request->all());
+        $facility = Facility::create($data);
         return response()->json($facility, 201);
     }
 
@@ -62,7 +63,7 @@ class FacilityController extends Controller
             $data['photo'] = $path;
         }
         
-        $facility->update($request->all());
+        $facility->update($data);
         return response()->json($facility);
     }
 
@@ -73,6 +74,6 @@ class FacilityController extends Controller
         }
 
         $facility->delete();
-        return response()->json(['message' => 'Facility deleted successfully']);
+        return response()->json(['message' => 'Facility deleted successfully'], Response::HTTP_NO_CONTENT);
     }
 }

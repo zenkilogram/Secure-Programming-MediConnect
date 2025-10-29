@@ -11,13 +11,27 @@ class Admin
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->user()->role !== 'admin') {
-            return redirect('/home');
+        $user = Auth::user();
+
+        // if Not logged in
+        if (!$user) {
+            // If API request
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+            // If web request
+            return redirect()->route('login');
+        }
+
+        // if Not admin
+        if ($user->role !== 'admin') {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'Forbidden Access'], 403);
+            }
+            return redirect()->route('home')->with('error', 'You are not authorized to access this page.');
         }
 
         return $next($request);

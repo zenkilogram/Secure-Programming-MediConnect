@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\FacilityController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -52,6 +53,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('hospitals', HospitalController::class);
     Route::resource('doctors', DoctorController::class);
     Route::resource('appointments', AppointmentController::class)->only(['index', 'update', 'destroy']);
+    Route::resource('facilities', FacilityController::class);
 });
 
 require __DIR__.'/auth.php';

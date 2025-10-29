@@ -31,13 +31,28 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role ?? 'user', // default to 'user'
         ]);
 
-        event(new Registered($user));
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // If it's an API request, return JSON
+        if ($request->is('api/*') || $request->expectsJson()) {
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'User registered successfully',
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'role' => $user->role,
+                'user' => $user,
+            ], 201);
+        }
 
         #$user->sendEmailVerificationNotification();
 
         // Redirect to verification notice page
+        \Illuminate\Support\Facades\Auth::login($user);
         return redirect()->route('verification.notice');
     }
 }
