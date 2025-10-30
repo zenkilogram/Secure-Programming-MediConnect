@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\DoctorController;
@@ -12,6 +13,10 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('api.register');
 Route::post('/login', [AuthenticatedSessionController::class, 'apiLogin']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthenticatedSessionController::class, 'apiLogout']);
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
