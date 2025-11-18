@@ -17,56 +17,61 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\FacilityController;
 
-Route::post('/register', [RegisteredUserController::class, 'store'])->name('api.register');
-Route::post('/login', [AuthenticatedSessionController::class, 'apiLogin']);
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Cache\RateLimiting\Limit;
 
-Route::post('/email/verification-notification', function (Request $request) {
-    if ($request->user()->hasVerifiedEmail()) {
-        return response()->json(['message' => 'Already verified']);
-    }
+Route::prefix('v1')->group(function () {
+    Route::post('/register', [RegisteredUserController::class, 'store'])->name('api.register')->middleware('throttle:register');
+    Route::post('/login', [AuthenticatedSessionController::class, 'apiLogin'])->middleware('throttle:login');
 
-    $request->user()->sendEmailVerificationNotification();
+    Route::post('/email/verification-notification', function (Request $request) {
+        if ($request->user()->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Already verified']);
+        }
 
-    return response()->json(['message' => 'Verification email sent']);
-})->middleware(['auth:sanctum'])->name('verification.send');
+        $request->user()->sendEmailVerificationNotification();
 
-// When user clicks the email verification link
-Route::get('/verify-email/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
+        return response()->json(['message' => 'Verification email sent']);
+    })->middleware(['auth:sanctum'])->name('verification.send');
 
-    return redirect(env('FRONTEND_URL') . '/email-verified'); 
-})->middleware(['signed'])->name('verification.verify');
+    // When user clicks the email verification link
+    Route::get('/verify-email/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthenticatedSessionController::class, 'apiLogout'])->name('api.logout');
+        return redirect(env('FRONTEND_URL') . '/email-verified'); 
+    })->middleware(['signed'])->name('verification.verify');
 
-    Route::get('/user', fn(Request $request) => $request->user());
+    Route::middleware('auth:sanctum', 'throttle:global')->group(function () {
+        Route::post('/logout', [AuthenticatedSessionController::class, 'apiLogout'])->name('api.logout');
 
-    Route::middleware('verified')->group(function () {
+        Route::get('/user', fn(Request $request) => $request->user());
 
-        Route::get('/me', [UserController::class, 'me']);
-        // Route::get('/me', [ProfileController::class, 'edit']);
-        Route::post('/me', [ProfileController::class, 'update']);
-        Route::post('/upload-image', [ImageUploadController::class, 'upload']);
+        Route::middleware('verified')->group(function () {
 
-        Route::middleware('role:admin')->group(function () {
-            Route::apiResource('users', UserController::class);
+            Route::get('/me', [UserController::class, 'me']);
+            // Route::get('/me', [ProfileController::class, 'edit']);
+            Route::post('/me', [ProfileController::class, 'update']);
+            Route::post('/upload-image', [ImageUploadController::class, 'upload']);
 
-            Route::apiResource('hospitals', HospitalController::class)->except(['index', 'show']);
-            Route::apiResource('doctors', DoctorController::class)->except(['index', 'show']);
-            Route::apiResource('appointments', AppointmentController::class)->only(['update', 'destroy']);
-            Route::apiResource('facilities', FacilityController::class)->except(['index', 'show']);
+            Route::middleware('role:admin')->group(function () {
+                Route::apiResource('users', UserController::class);
+
+                Route::apiResource('hospitals', HospitalController::class)->except(['index', 'show']);
+                Route::apiResource('doctors', DoctorController::class)->except(['index', 'show']);
+                Route::apiResource('appointments', AppointmentController::class)->only(['update', 'destroy']);
+                Route::apiResource('facilities', FacilityController::class)->except(['index', 'show']);
+            });
+
+            Route::middleware('role:user')->group(function () {
+                Route::apiResource('appointments', AppointmentController::class)->only(['index', 'store', 'show']);
+            });
+
+            Route::get('hospitals', [HospitalController::class, 'index']);
+            Route::get('hospitals/{hospital}', [HospitalController::class, 'show']);
+            Route::get('doctors', [DoctorController::class, 'index']);
+            Route::get('doctors/{doctor}', [DoctorController::class, 'show']);
+            Route::get('facilities', [FacilityController::class, 'index']);
+            Route::get('facilities/{facility}', [FacilityController::class, 'show']);
         });
-
-        Route::middleware('role:user')->group(function () {
-            Route::apiResource('appointments', AppointmentController::class)->only(['index', 'store', 'show']);
-        });
-
-        Route::get('hospitals', [HospitalController::class, 'index']);
-        Route::get('hospitals/{hospital}', [HospitalController::class, 'show']);
-        Route::get('doctors', [DoctorController::class, 'index']);
-        Route::get('doctors/{doctor}', [DoctorController::class, 'show']);
-        Route::get('facilities', [FacilityController::class, 'index']);
-        Route::get('facilities/{facility}', [FacilityController::class, 'show']);
     });
 });

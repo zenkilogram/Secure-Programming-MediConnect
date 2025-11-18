@@ -31,22 +31,23 @@ class RegisteredUserController extends Controller
             'role' => $request->role ?? 'user', // default to 'user'
         ]);
 
+        $user->sendEmailVerificationNotification();
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         // If it's an API request, return JSON
-        if ($request->is('api/*') || $request->expectsJson()) {
-            $token = $user->createToken('auth_token')->plainTextToken;
+        // if ($request->is('api/*') || $request->expectsJson()) {
+        //     $token = $user->createToken('auth_token')->plainTextToken;
 
-            return response()->json([
-                'message' => 'User registered successfully',
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-                'role' => $user->role,
-                'user' => $user,
-            ], 201);
-        }
+        //     return response()->json([
+        //         'message' => 'User registered successfully',
+        //         'access_token' => $token,
+        //         'token_type' => 'Bearer',
+        //         'role' => $user->role,
+        //         'user' => $user,
+        //     ], 201);
+        // }
 
-        $user->sendEmailVerificationNotification();
 
         return response()->json([
             'message' => 'User registered successfully. Please verify your email.',

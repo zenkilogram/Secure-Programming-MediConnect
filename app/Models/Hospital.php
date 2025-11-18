@@ -17,6 +17,8 @@ class Hospital extends Model
         'image',
     ];
 
+    protected $appends = ['image_url'];
+
     protected $hidden = ['image'];
 
     /**
@@ -39,8 +41,6 @@ class Hospital extends Model
     {
         return $this->hasMany(Facility::class);
     }
-
-    protected $appends = ['image_url'];
 
     public function getImageUrlAttribute()
     {
