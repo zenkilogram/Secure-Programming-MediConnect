@@ -65,7 +65,7 @@ export default function Profile() {
                 <strong>Doctor</strong> 
                 <p>Dr. Angel Chandra</p>
                 <strong>Hospital</strong>
-                <p> Linon Hospital</p>
+                <p> Daun Hospital</p>
                 <strong>Speciality</strong> 
                 <p>Cardiology</p>
             </div>
@@ -87,9 +87,9 @@ export default function Profile() {
       case "history":
         const historyList = [
           {
-            doctor: "Dr. Albert",
+            doctor: "Dr. Alan Halim",
             specialty: "Cardiology",
-            hospital: "Mitra Keluarga Hospital",
+            hospital: "Daun Hospital",
             date: "01/10/2025",
             status: "Cancelled"
           }
