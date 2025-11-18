@@ -1,0 +1,16 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.speciality-detail{
+  min-height: 80vh;
+  padding-bottom: 40px;
+}
+
+.speciality-detail h2{
+    text-align: center;
+    margin-top: 20px;
+    color: black;
+}
