@@ -16,7 +16,7 @@ class NewPasswordController extends Controller
 {
     public function create(Request $request): View
     {
-        return view('auth.reset-password', ['request' => $request]);
+        return response()->json([ 'token' => $request->route('token'), 'email' => $request->email, ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -40,9 +40,14 @@ class NewPasswordController extends Controller
             }
         );
 
-        return $status === Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                            ->withErrors(['email' => [__($status)]]);
+        if ($status === Password::PASSWORD_RESET) {
+            return response()->json([
+                'message' => 'Password reset successful.',
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => __($status),
+        ], 400);
     }
 }

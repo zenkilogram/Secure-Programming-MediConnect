@@ -56,4 +56,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('facilities', FacilityController::class);
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+
 require __DIR__.'/auth.php';

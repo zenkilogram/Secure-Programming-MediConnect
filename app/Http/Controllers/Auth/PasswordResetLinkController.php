@@ -10,10 +10,6 @@ use Illuminate\View\View;
 
 class PasswordResetLinkController extends Controller
 {
-    public function create(): View
-    {
-        return view('auth.forgot-password');
-    }
 
     public function store(Request $request): RedirectResponse
     {
@@ -23,9 +19,15 @@ class PasswordResetLinkController extends Controller
             $request->only('email')
         );
 
-        return $status === Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                            ->withErrors(['email' => __($status)]);
+        if ($status === Password::RESET_LINK_SENT) {
+            return response()->json([
+                'message' => 'Password reset link sent to email.',
+                'status' => __($status),
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => __($status),
+        ], 400);
     }
 }

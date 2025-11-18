@@ -11,12 +11,14 @@ class DoctorController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'admin']); // only admin can manage doctors
+        $this->middleware(['auth:sanctum', 'admin']); // only admin can manage doctors
     }
 
     public function index()
     {
-        return Doctor::with('hospital')->get();
+        return response()->json(
+            Doctor::with('hospital')->get()
+        );
     }
 
     public function store(Request $request)
@@ -41,7 +43,9 @@ class DoctorController extends Controller
 
     public function show(Doctor $doctor)
     {
-        return $doctor->load('hospital');
+        return response()->json(
+            $doctor->load('hospital')
+        );
     }
 
     public function update(Request $request, Doctor $doctor)
@@ -76,6 +80,7 @@ class DoctorController extends Controller
         }
         
         $doctor->delete();
+        
         return response()->json(['message' => 'Doctor deleted']);
     }
 }

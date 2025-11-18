@@ -10,12 +10,14 @@ class HospitalController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'admin']); // only admin can manage hospitals
+        $this->middleware(['auth:sanctum', 'admin']); // only admin can manage hospitals
     }
 
     public function index()
     {
-        return Hospital::all();
+        return response()->json(
+            Hospital::all()
+        );
     }
 
     public function store(Request $request)
@@ -39,7 +41,9 @@ class HospitalController extends Controller
 
     public function show(Hospital $hospital)
     {
-        return $hospital;
+        return response()->json(
+            $hospital
+        );
     }
 
     public function update(Request $request, Hospital $hospital)

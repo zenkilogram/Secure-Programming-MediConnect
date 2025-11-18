@@ -17,7 +17,9 @@ class FacilityController extends Controller
 
     public function index()
     {
-        return Facility::with('hospital')->get();
+        return response()->json(
+            Facility::with('hospital')->get()
+        );
     }
 
     public function store(Request $request, Hospital $hospital)
@@ -41,7 +43,9 @@ class FacilityController extends Controller
 
     public function show(Facility $facility)
     {
-        return $facility->load('hospital');
+        return response()->json(
+            $facility->load('hospital')
+        );
     }
 
     public function update(Request $request, Facility $facility)
