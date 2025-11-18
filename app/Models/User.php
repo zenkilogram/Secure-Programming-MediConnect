@@ -54,8 +54,18 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->role === 'admin';
     }
 
-    // public function user()
-    // {
-    //     return $this->belongsTo(User::class);
-    // }
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    protected $appends = ['profile_image_url'];
+
+    public function getProfileImageUrlAttribute()
+    {
+        return $this->profile_image
+            ? Storage::disk('public')->url($this->profile_image)
+            : null;
+    }
+
 }

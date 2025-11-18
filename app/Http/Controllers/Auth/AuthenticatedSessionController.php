@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -12,28 +12,6 @@ use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
 {
-    public function create(): View
-    {
-        return view('auth.login');
-    }
-
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
-        #$request->session()->regenerate();
-
-        return redirect()->intended(route('home'));
-    }
-
-    public function destroy(Request $request): RedirectResponse
-    {
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/');
-    }
 
     public function apiLogin(Request $request)
     {
@@ -51,10 +29,15 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        // Optional: delete old tokens to allow only one session
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Email is not verified. Please verify your email before logging in.'
+            ], 403);
+        }
+
+        // to delete old tokens to allow only one session
         $user->tokens()->delete();
 
-        // Create Sanctum token
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -76,7 +59,7 @@ class AuthenticatedSessionController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Successfully logged out'
+            'message' => 'Successfully logged out.'
         ]);
     }
 

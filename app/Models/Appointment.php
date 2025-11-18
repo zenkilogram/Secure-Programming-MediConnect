@@ -9,6 +9,10 @@ class Appointment extends Model
 {
     use HasFactory;
 
+    const STATUS_PENDING   = 'pending';
+    const STATUS_CONFIRMED = 'confirmed';
+    const STATUS_CANCELLED = 'cancelled';
+
     protected $fillable = [
         'user_id',
         'hospital_id',
@@ -19,6 +23,15 @@ class Appointment extends Model
         'notes',
     ];
 
+     protected $casts = [
+        'date' => 'date',
+        'time' => 'datetime',
+    ];
+
+    protected $attributes = [
+        'status' => self::STATUS_PENDING,
+    ];
+    
     /**
      * Patient who booked the appointment.
      */

@@ -18,6 +18,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/me', [UserController::class, 'me']);
+
+    Route::post('/upload-image', [ImageUploadController::class, 'upload']);
+
+    Route::middleware('role:admin')->group(function () {
+        Route::apiResource('users', UserController::class);
+    });
+});
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     // Admin only

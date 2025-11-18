@@ -46,10 +46,13 @@ class RegisteredUserController extends Controller
             ], 201);
         }
 
-        #$user->sendEmailVerificationNotification();
+        $user->sendEmailVerificationNotification();
 
-        // Redirect to verification notice page
-        \Illuminate\Support\Facades\Auth::login($user);
-        return redirect()->route('verification.notice');
+        return response()->json([
+            'message' => 'User registered successfully. Please verify your email.',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user,
+        ], 201);
     }
 }

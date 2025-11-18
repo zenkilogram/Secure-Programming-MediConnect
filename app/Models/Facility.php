@@ -18,9 +18,11 @@ class Facility extends Model
 
     protected $appends = ['photo_url'];
 
+    protected $hidden = ['photo'];
+
     public function getPhotoUrlAttribute()
     {
-        return $this->photo ? asset('storage/' . $this->photo) : null;
+        return $this->photo ? \Storage::disk('public')->url($this->photo) : null;
     }
 
     public function hospital()

@@ -17,6 +17,8 @@ class Hospital extends Model
         'image',
     ];
 
+    protected $hidden = ['image'];
+
     /**
      * Get all doctors in this hospital.
      */
@@ -42,6 +44,6 @@ class Hospital extends Model
 
     public function getImageUrlAttribute()
     {
-        return $this->image ? asset('storage/' . $this->image) : null;
+        return $this->image ? \Storage::disk('public')->url($this->image) : null;
     }
 }

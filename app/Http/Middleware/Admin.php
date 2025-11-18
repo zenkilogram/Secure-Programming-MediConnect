@@ -14,10 +14,9 @@ class Admin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::user();
 
         // if Not logged in
-        if (!$user) {
+        if (!auth()->check()) {
             // If API request
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json(['message' => 'Unauthorized'], 401);
@@ -25,6 +24,8 @@ class Admin
             // If web request
             return redirect()->route('login');
         }
+
+        $user = auth()->user();
 
         // if Not admin
         if ($user->role !== 'admin') {
