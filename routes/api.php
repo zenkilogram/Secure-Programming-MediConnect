@@ -45,7 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('verified')->group(function () {
 
         Route::get('/me', [UserController::class, 'me']);
-        Route::get('/me', [ProfileController::class, 'edit']);
+        // Route::get('/me', [ProfileController::class, 'edit']);
         Route::post('/me', [ProfileController::class, 'update']);
         Route::post('/upload-image', [ImageUploadController::class, 'upload']);
 
