@@ -5,7 +5,6 @@ body, .mediconnect {
   color: #003a70;
 }
 
-/* NAVBAR */
 .navbar {
   display: flex;
   justify-content: space-between;
