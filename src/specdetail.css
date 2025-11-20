@@ -1,16 +1,10 @@
-*{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+.speciality-detail p {
+  white-space: pre-line;
+  line-height: 1.6;
 }
 
 .speciality-detail{
-  min-height: 80vh;
-  padding-bottom: 40px;
-}
-
-.speciality-detail h2{
-    text-align: center;
-    margin-top: 20px;
     color: black;
+    margin-left: 50px;
+    margin-top: 20px;
 }
