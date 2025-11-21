@@ -10,10 +10,6 @@ use Illuminate\Http\Response;
 
 class FacilityController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth:sanctum', 'admin']); // only admin can manage facilities
-    }
 
     public function index()
     {

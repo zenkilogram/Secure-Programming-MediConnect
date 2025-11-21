@@ -8,10 +8,6 @@ use Illuminate\Support\Facades\Storage;
 
 class HospitalController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth:sanctum', 'admin']); // only admin can manage hospitals
-    }
 
     public function index()
     {

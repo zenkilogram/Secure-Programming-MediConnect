@@ -9,10 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 class DoctorController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth:sanctum', 'admin']); // only admin can manage doctors
-    }
+    // HAPUS __construct KARENA SUDAH DIATUR DI ROUTE API.PHP
 
     public function index()
     {
@@ -26,19 +23,22 @@ class DoctorController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'specialty' => 'nullable|string',
-            'hospital_id' => 'required|exists:hospitals,id',
+            'hospital_id' => 'nullable|exists:hospitals,id', 
             'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'education' => 'nullable|string',
-            'available_schedule' => 'nullable|array',
+            'available_schedule' => 'nullable|string', // Ubah array ke string kalau frontend kirim teks
         ]);
 
         if ($request->hasFile('photo')) {
+            // Pastikan folder storage/app/public/doctors ada
             $path = $request->file('photo')->store('doctors', 'public');
-            $data['photo'] = $path;
+            // Simpan full URL biar gampang diakses frontend
+            $data['photo_url'] = url('storage/' . $path); 
+            $data['photo'] = $path; // Simpan path asli juga
         }
 
         $doctor = Doctor::create($data);
-        return response()->json($doctor, 201);
+        return response()->json(['message' => 'Success', 'data' => $doctor], 201);
     }
 
     public function show(Doctor $doctor)
@@ -53,10 +53,10 @@ class DoctorController extends Controller
         $data = $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'specialty' => 'nullable|string',
-            'hospital_id' => 'sometimes|required|exists:hospitals,id',
+            'hospital_id' => 'nullable|exists:hospitals,id',
             'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'education' => 'nullable|string',
-            'available_schedule' => 'nullable|array',
+            'available_schedule' => 'nullable|string',
         ]);
 
         // Handle image upload (replace old one if new uploaded)
@@ -66,11 +66,12 @@ class DoctorController extends Controller
             }
 
             $path = $request->file('photo')->store('doctors', 'public');
+            $data['photo_url'] = url('storage/' . $path);
             $data['photo'] = $path;
         }
 
         $doctor->update($data);
-        return response()->json($doctor);
+        return response()->json(['message' => 'Updated', 'data' => $doctor]);
     }
 
     public function destroy(Doctor $doctor)
