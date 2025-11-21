@@ -4,19 +4,20 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // 1. Import CSS
 import './index.css';
-import './Admin.css'; // CSS Admin yang kita buat tadi
+import './Admin.css';
 
-// 2. Import Landing Page
+// 2. Import Landing Page & Public Pages
 import App from './App.jsx';
-
-// 3. Import Halaman Punya Temanmu (Sesuai nama file di screenshot konflik)
-// Pastikan nama file ini sesuai besar/kecil hurufnya di folder src kamu
 import Login from './login.jsx';
 import Register from './register.jsx';
-// import Booking from './booking.jsx'; // Uncomment kalau file ini ada
-// import Profile from './Profile.jsx'; // Uncomment kalau file ini ada
+import Booking from './Booking.jsx';
+import AboutUs from './aboutus.jsx';
+import Profile from './profile.jsx';
+import Specialities from './specialities.jsx';
+import SpecialityDetail from './specdetail.jsx';
+import Doctor from './doctor.jsx';
 
-// 4. Import Halaman Admin (Punya Kamu)
+// 3. Import Halaman Admin (Punya Kamu)
 import Dashboard from './pages/Dashboard.jsx';
 import ManageDoctors from './pages/ManageDoctors.jsx';
 import EditDoctor from './pages/EditDoctor.jsx';
@@ -35,12 +36,18 @@ const ComingSoon = ({ page }) => (
 const AppRoutes = () => (
   <BrowserRouter>
     <Routes>
-      {/* --- PUBLIC ROUTES --- */}
+      {/* --- PUBLIC ROUTES (Punya Temanmu) --- */}
       <Route path="/" element={<App />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/booking" element={<Booking />} />
+      <Route path="/aboutus" element={<AboutUs />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/specialities" element={<Specialities />} />
+      <Route path="/specialities/:id" element={<SpecialityDetail />} />
+      <Route path="/doctor" element={<Doctor />} />
       
-      {/* --- ADMIN ROUTES --- */}
+      {/* --- ADMIN ROUTES (Punya Kamu) --- */}
       <Route path="/admin" element={<Dashboard />} />
       
       {/* Doctors */}
@@ -54,7 +61,7 @@ const AppRoutes = () => (
       <Route path="/admin/hospitals/:id/edit" element={<EditHospital />} />
 
       {/* Others */}
-      <Route path="/admin/appointments" element={<ComingSoon page="Edit Appointment" />} />
+      <Route path="/admin/appointments" element={<ComingSoon page="Appointments" />} />
       <Route path="/admin/logs" element={<ComingSoon page="Logs" />} />
       
       {/* Fallback */}

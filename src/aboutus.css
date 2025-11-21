@@ -1,0 +1,22 @@
+*{
+    margin: 0px;
+}
+
+.aboutus-page{
+    min-height: 80vh;
+    text-align: center;
+    color: black;
+    padding: 40px 20px;
+}
+
+.aboutus-page h2{
+    color: black;
+    margin-top: 20px;
+}
+
+.aboutus-page p {
+    color:black;
+    margin-top: 20px;
+    margin-left: 100px;
+    margin-right: 100px;
+}
