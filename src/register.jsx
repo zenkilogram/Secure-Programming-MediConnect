@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./register.css";
 
 export default function Register() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -17,11 +20,12 @@ export default function Register() {
   const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
+  setForm({
+    ...form,
+    [e.target.name]: e.target.value,
+  });
+};
+
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -50,7 +54,8 @@ export default function Register() {
       if (!res.ok) {
         setError(data.message || "Registration failed");
       } else {
-        setSuccess("Account created! Please check your email.");
+        setSuccess("Account created!");
+        setTimeout(() => navigate("/"), 1000);
       }
     } catch (err) {
       setError("Server error. Please try again.");
