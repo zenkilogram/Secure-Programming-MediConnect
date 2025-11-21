@@ -1,8 +1,11 @@
+// src/App.jsx (PERBARUI FILE INI)
 import { useState } from "react";
 import "./App.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+// HAPUS: import ManageDoctor from "./ManageDoctor"; // Halaman ini dihapus/digantikan
+import React from "react"; 
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -16,7 +19,6 @@ const slides = [
   "https://i.ibb.co/M8kQMzM/doctor-banner-2.jpg",
   "https://i.ibb.co/LxW8PQp/doctor-banner-3.jpg",
 ];
-
 
   // Specialities
   const specialties = [
@@ -37,6 +39,7 @@ const slides = [
         <div className="logo">MediConnect</div>
         <div className="nav-links">
           <a href="#">Home</a>
+          <a href="/admin">Admin Dashboard</a> {/* Tambahkan link admin */}
           <a href="#">About Us</a>
           <a href="#">Contact</a>
         </div>
@@ -72,7 +75,9 @@ const slides = [
           </SwiperSlide>
         ))}
       </Swiper>
-
+      
+      {/* HAPUS: <ManageDoctor /> */}
+      
       {/* SPECIALITIES */}
       <section className="specialties">
         <h2 className="section-title">Specialities</h2>
@@ -86,15 +91,15 @@ const slides = [
         </div>
       </section>
       <footer className="footer">
-  <div className="footer-left">
-    <div className="logo">MediConnect</div>
-    <div className="copy">© 2025 MediConnect. All rights reserved.</div>
-  </div>
-  <div className="footer-right">
-    <a href="#">FAQs</a>
-    <a href="#">Privacy Policy</a>
-  </div>
-</footer>
+        <div className="footer-left">
+          <div className="logo">MediConnect</div>
+          <div className="copy">© 2025 MediConnect. All rights reserved.</div>
+        </div>
+        <div className="footer-right">
+          <a href="#">FAQs</a>
+          <a href="#">Privacy Policy</a>
+        </div>
+      </footer>
 
     </div>
   );
