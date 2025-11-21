@@ -1,0 +1,237 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.profile-page {
+  max-width: 900px;
+  margin: 60px auto;
+  font-family: "Poppins", sans-serif;
+  color: #222;
+  display: flex;
+  flex-direction: column;
+  min-height: 80vh;
+}
+
+.profile-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.profile-wrapper {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 800px;
+  height: 400px;
+}
+
+.profile-sidebar {
+  width: 200px;
+  background-color: #CCDFF6;
+  padding: 20px;
+}
+
+.profile-sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.profile-sidebar li {
+  padding: 12px 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 200px;
+}
+
+.profile-sidebar li.active {
+  background-color: #78add699;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.profile-sidebar li.logout {
+  color: red;
+  margin-top: 120px;
+}
+
+.profile-sidebar li:hover:not(.logout) {
+  background-color: rgba(101, 159, 203, 0.6);
+  border-radius: 6px;
+}
+
+.profile-content {
+  flex: 1;
+  background-color: white;
+  padding: 30px 40px;
+}
+
+.profile-content h3 {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.profile-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+}
+
+.profile-item strong {
+  display: block;
+  font-size: 1rem;
+  color: #111;
+}
+
+.profile-item p {
+  margin: 3px 0 0;
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.change-text {
+  color: #aaa;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.change-text:hover {
+  color: #0077cc;
+}
+
+.profile-item input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 6px;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+}
+
+.save-btn {
+  background: #6d89ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.save-btn:hover {
+  background: #5570e0;
+}
+
+.password-item input{
+  width: 500px;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 11px;
+    margin-left: 0px;
+    background-color: #DBE9FF;
+    border-color: #DBE9FF;
+    border: 1px solid transparent;
+}
+
+.password-item-new input{
+    width: 500px;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 11px;
+    background-color: #DBE9FF;
+    border-color: #DBE9FF;
+    border: 1px solid transparent;
+}
+
+.password-item-confirm input{
+    width: 500px;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 11px;
+    margin-left: 0px;
+    background-color: #DBE9FF;
+    border-color: #DBE9FF;
+    border: 1px solid transparent;
+}
+
+.doctor-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
+  background-color: #eee;
+  object-fit: cover;
+}
+
+.appointment-1 {
+  display: grid;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-left: 170px;
+  margin-top: -160px;
+}
+
+.appointment-2 {
+  display: grid;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-left: 350px;
+  margin-top: -140px;
+}
+
+.appointment-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.reschedule-btn{
+  background: #6d89ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 80px;
+}
+
+.cancel-btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ff6d6d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 80px;
+  margin-left: 100px;
+}
+
+.reschedule-btn:hover{
+  background: #5570e0;
+}
+
+.cancel-btn:hover{
+  background: #e05555;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.history-table th,
+.history-table td {
+  padding: 10px;
+  border-bottom: 1px solid #dcdcdc;
+  text-align: left;
+  font-size: 12px;
+}

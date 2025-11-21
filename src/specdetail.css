@@ -1,0 +1,10 @@
+.speciality-detail p {
+  white-space: pre-line;
+  line-height: 1.6;
+}
+
+.speciality-detail{
+    color: black;
+    margin-left: 50px;
+    margin-top: 20px;
+}

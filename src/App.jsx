@@ -1,26 +1,22 @@
-// src/App.jsx (PERBARUI FILE INI)
-import { useState } from "react";
+import React, { useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+
+// Import CSS
 import "./App.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-// HAPUS: import ManageDoctor from "./ManageDoctor"; // Halaman ini dihapus/digantikan
-import React from "react"; 
-
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
 
 export default function App() {
   const [search, setSearch] = useState("");
 
-  // Banner images (relevan & seragam gaya ilustrasi medis)
-const slides = [
-  "https://i.ibb.co/8z1FQ3R/doctor-banner-1.jpg",
-  "https://i.ibb.co/M8kQMzM/doctor-banner-2.jpg",
-  "https://i.ibb.co/LxW8PQp/doctor-banner-3.jpg",
-];
+  const slides = [
+    "https://i.ibb.co/8z1FQ3R/doctor-banner-1.jpg",
+    "https://i.ibb.co/M8kQMzM/doctor-banner-2.jpg",
+    "https://i.ibb.co/LxW8PQp/doctor-banner-3.jpg",
+  ];
 
-  // Specialities
   const specialties = [
     { id: 1, name: "Cardiology", icon: "❤️" },
     { id: 2, name: "Neurology", icon: "🧠" },
@@ -34,14 +30,16 @@ const slides = [
 
   return (
     <div className="mediconnect">
-      {/* HEADER */}
+      {/* NAVBAR */}
       <nav className="navbar">
         <div className="logo">MediConnect</div>
         <div className="nav-links">
-          <a href="#">Home</a>
-          <a href="/admin">Admin Dashboard</a> {/* Tambahkan link admin */}
-          <a href="#">About Us</a>
-          <a href="#">Contact</a>
+          <a href="/">Home</a>
+          {/* Link ke halaman Login punya temanmu */}
+          <a href="/login">Login</a>
+          <a href="/register">Register</a>
+          {/* Link ke Admin (hanya bisa diakses kalau sudah login nanti) */}
+          <a href="/admin">Admin Dashboard</a>
         </div>
       </nav>
 
@@ -67,17 +65,11 @@ const slides = [
       >
         {slides.map((s, i) => (
           <SwiperSlide key={i}>
-            <img
-              src={s}
-              alt={`Banner ${i}`}
-              className="banner-img"
-            />
+            <img src={s} alt={`Banner ${i}`} className="banner-img" />
           </SwiperSlide>
         ))}
       </Swiper>
-      
-      {/* HAPUS: <ManageDoctor /> */}
-      
+
       {/* SPECIALITIES */}
       <section className="specialties">
         <h2 className="section-title">Specialities</h2>
@@ -90,6 +82,8 @@ const slides = [
           ))}
         </div>
       </section>
+
+      {/* FOOTER */}
       <footer className="footer">
         <div className="footer-left">
           <div className="logo">MediConnect</div>
@@ -100,7 +94,6 @@ const slides = [
           <a href="#">Privacy Policy</a>
         </div>
       </footer>
-
     </div>
   );
 }
