@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { FaUserCircle, FaSignOutAlt, FaSignInAlt, FaCog } from "react-icons/fa"; // Import Icon
+import { Link, useNavigate } from "react-router-dom"; // Import Link & Navigate
 
 // Import CSS
 import "./App.css";
@@ -10,6 +12,38 @@ import "swiper/css/pagination";
 
 export default function App() {
   const [search, setSearch] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false); // State untuk menu dropdown
+  const navigate = useNavigate();
+
+  // Cek status login saat website dimuat
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    if (token) {
+      setIsLoggedIn(true);
+      if (role === 'admin') {
+        setIsAdmin(true);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    // Hapus data dari local storage
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("user_name");
+    
+    // Reset state
+    setIsLoggedIn(false);
+    setIsAdmin(false);
+    setShowDropdown(false);
+    
+    alert("You have been logged out.");
+    navigate("/"); // Refresh ke home
+  };
 
   const slides = [
     "https://i.ibb.co/8z1FQ3R/doctor-banner-1.jpg",
@@ -34,12 +68,57 @@ export default function App() {
       <nav className="navbar">
         <div className="logo">MediConnect</div>
         <div className="nav-links">
-          <a href="/">Home</a>
-          {/* Link ke halaman Login punya temanmu */}
-          <a href="/login">Login</a>
-          <a href="/register">Register</a>
-          {/* Link ke Admin (hanya bisa diakses kalau sudah login nanti) */}
-          <a href="/admin">Admin Dashboard</a>
+          <Link to="/">Home</Link>
+          <a href="#">About Us</a>
+          <a href="#">Contact</a>
+          
+          {/* PROFILE SECTION (GANTIKAN LOGIN/REGISTER BIASA) */}
+          <div className="profile-menu-container" style={{position: 'relative', display: 'inline-block', marginLeft: '20px'}}>
+            <button 
+              onClick={() => setShowDropdown(!showDropdown)} 
+              className="profile-btn"
+              style={{background: 'transparent', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', fontSize: '1.2rem'}}
+            >
+              <FaUserCircle size={28} /> 
+            </button>
+
+            {/* DROPDOWN MENU */}
+            {showDropdown && (
+              <div className="dropdown-content" style={{
+                position: 'absolute',
+                right: 0,
+                top: '40px',
+                backgroundColor: 'white',
+                minWidth: '160px',
+                boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
+                zIndex: 100,
+                borderRadius: '8px',
+                overflow: 'hidden'
+              }}>
+                {isLoggedIn ? (
+                  <>
+                    {isAdmin && (
+                      <Link to="/admin/doctors" className="dropdown-item" style={{color: '#333', padding: '12px 16px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px', borderBottom: '1px solid #eee'}}>
+                        <FaCog /> Dashboard
+                      </Link>
+                    )}
+                    <button onClick={handleLogout} className="dropdown-item" style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: '#d9534f', padding: '12px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px'}}>
+                      <FaSignOutAlt /> Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" className="dropdown-item" style={{color: '#333', padding: '12px 16px', textDecoration: 'none', display: 'block', borderBottom: '1px solid #eee'}}>
+                       <FaSignInAlt style={{marginRight: '8px'}}/> Login
+                    </Link>
+                    <Link to="/register" className="dropdown-item" style={{color: '#333', padding: '12px 16px', textDecoration: 'none', display: 'block'}}>
+                       Register
+                    </Link>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 
