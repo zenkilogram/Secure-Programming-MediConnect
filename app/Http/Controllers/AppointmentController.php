@@ -10,10 +10,10 @@ use Illuminate\Validation\Rule;
 
 class AppointmentController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:sanctum'); // all routes require login
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth:sanctum'); // all routes require login
+    // }
 
     public function index()
     {
@@ -97,11 +97,26 @@ class AppointmentController extends Controller
         }
 
         $data = $request->validate([
+            'hospital_id' => 'sometimes|exists:hospitals,id',
+            'doctor_id' => 'sometimes|exists:doctors,id',
             'date' => 'sometimes|date|after_or_equal:today',
             'time' => 'sometimes',
             'status' => ['sometimes', Rule::in(['pending','confirmed','cancelled'])],
             'notes' => 'nullable|string',
         ]);
+
+        if (isset($data['hospital_id'], $data['doctor_id'])) {
+            $validdoctor = Doctor::where([
+                'id' => $data['doctor_id'],
+                'hospital_id' => $data['hospital_id'],
+            ])->exists();
+
+            if (!$validdoctor) {
+                return response()->json(['message' => 'Doctor does not belong to selected hospital'], 422);
+            }
+        }
+
+        $doctorId = $data['doctor_id'] ?? $appointment->doctor_id;
 
         if (isset($data['date'], $data['time'])) {
             $exists = Appointment::where('doctor_id', $appointment->doctor_id)
@@ -117,7 +132,7 @@ class AppointmentController extends Controller
 
         $appointment->update($data);
 
-        return response()->json($appointment);
+        return response()->json($appointment->fresh()->load(['doctor','hospital']));
     }
 
     public function destroy(Appointment $appointment)

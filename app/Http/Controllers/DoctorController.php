@@ -13,9 +13,15 @@ class DoctorController extends Controller
 
     public function index()
     {
-        return response()->json(
-            Doctor::with('hospital')->get()
-        );
+        $search = $request->query('search');
+
+        $query = Doctor::query();
+
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        return response()->json($query->get());
     }
 
     public function store(Request $request)
