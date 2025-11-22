@@ -11,18 +11,28 @@ class DoctorController extends Controller
 {
     // HAPUS __construct KARENA SUDAH DIATUR DI ROUTE API.PHP
 
-    public function index()
-    {
-        $search = $request->query('search');
+    public function index(Request $request) // ← TAMBAHKAN Request $request
+{
+    $search = $request->query('search');
+    $hospital_id = $request->query('hospital_id');
+    $specialty = $request->query('specialty'); // ← specialty bukan specialty_id
 
-        $query = Doctor::query();
+    $query = Doctor::query();
 
-        if ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        }
-
-        return response()->json($query->get());
+    if ($search) {
+        $query->where('name', 'like', '%' . $search . '%');
     }
+
+    if ($hospital_id) {
+        $query->where('hospital_id', $hospital_id);
+    }
+
+    if ($specialty) {
+        $query->where('specialty', $specialty);
+    }
+
+    return response()->json($query->get());
+}
 
     public function store(Request $request)
     {
