@@ -12,11 +12,13 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Fetch data ketika page load
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
+        // 1. Fetch user data
         try {
           const userRes = await api.get("/me");
           const userData = userRes.data;
@@ -38,6 +40,7 @@ export default function Profile() {
           });
         }
 
+        // 2. Fetch appointments
         try {
           const appointmentsRes = await api.get("/appointments");
           if (appointmentsRes.data && Array.isArray(appointmentsRes.data)) {
@@ -67,6 +70,7 @@ export default function Profile() {
     fetchData();
   }, []);
 
+  // Handle Reschedule
   const handleReschedule = (appointment) => {
     localStorage.setItem('reschedule_data', JSON.stringify({
       hospital_id: appointment.hospital_id,
@@ -78,6 +82,7 @@ export default function Profile() {
     navigate("/booking");
   };
 
+  // Handle Cancel Appointment
   const handleCancel = async (appointmentId) => {
     if (!window.confirm("Are you sure you want to cancel this appointment?")) {
       return;
@@ -102,6 +107,7 @@ export default function Profile() {
     }
   };
 
+  // Format date untuk display
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     try {
@@ -116,6 +122,7 @@ export default function Profile() {
     }
   };
 
+  // Format time untuk display
   const formatTime = (timeString) => {
     if (!timeString) return "N/A";
     try {
@@ -175,80 +182,81 @@ export default function Profile() {
         );
 
       case "appointment":
-        if (!appointments || appointments.length === 0) {
-          return (
-            <div className="no-appointment">
-              <div className="no-appointment-icon">📅</div>
-              <h3>No Upcoming Appointments</h3>
-              <p>You don't have any scheduled appointments yet.</p>
-              <button 
-                className="book-now-btn"
-                onClick={() => navigate("/booking")}
-              >
-                Book an Appointment
-              </button>
-            </div>
-          );
-        }
-        return (
-          <div className="appointments-list">
-            {appointments.map((apt) => (
-              <div key={apt.id} className="appointment-wrapper">
-                <div className="appointment-card">
-                  <img 
-                    src={apt.doctor?.photo || doctorImg} 
-                    alt="Doctor" 
-                    className="appointment-photo" 
-                  />
+  if (!appointments || appointments.length === 0) {
+    return (
+      <div className="no-appointment">
+        <div className="no-appointment-icon">📅</div>
+        <h3>No Upcoming Appointments</h3>
+        <p>You don't have any scheduled appointments yet.</p>
+        <button 
+          className="book-now-btn"
+          onClick={() => navigate("/booking")}
+        >
+          Book an Appointment
+        </button>
+      </div>
+    );
+  }
+  return (
+    <div className="appointments-list">
+      {appointments.map((apt) => (
+        <div key={apt.id} className="appointment-wrapper">
+          <div className="appointment-card">
+            {/* HAPUS BAGIAN INI ↓ */}
+            {/* <img 
+              src={apt.doctor?.photo || doctorImg} 
+              alt="Doctor" 
+              className="appointment-photo" 
+            /> */}
 
-                  <div className="appointment-info">
-                    <div className="info-row">
-                      <b>Doctor</b>
-                      <span>{apt.doctor?.name || apt.doctorName || "Doctor"}</span>
-                    </div>
-                    <div className="info-row">
-                      <b>Hospital</b>
-                      <span>{apt.hospital?.name || apt.hospitalName || "Hospital"}</span>
-                    </div>
-                    <div className="info-row">
-                      <b>Specialty</b>
-                      <span>{apt.specialty?.name || apt.specialtyName || apt.doctor?.specialty || "Specialty"}</span>
-                    </div>
-                  </div>
-
-                  <div className="appointment-side">
-                    <div className="info-row">
-                      <b>Date</b>
-                      <span>{formatDate(apt.date)} — {formatTime(apt.time)}</span>
-                    </div>
-                    <div className="info-row">
-                      <b>Status</b>
-                      <span className={`status-text ${apt.status?.toLowerCase()}`}>
-                        {apt.status}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="appointment-actions">
-                  <button 
-                    className="appointment-btn reschedule-btn"
-                    onClick={() => handleReschedule(apt)}
-                  >
-                    Reschedule
-                  </button>
-
-                  <button 
-                    className="appointment-btn cancel-btn"
-                    onClick={() => handleCancel(apt.id)}
-                  >
-                    Cancel
-                  </button>
-                </div>
+            <div className="appointment-info">
+              <div className="info-row">
+                <b>Doctor</b>
+                <span>{apt.doctor?.name || apt.doctorName || "Doctor"}</span>
               </div>
-            ))}
+              <div className="info-row">
+                <b>Hospital</b>
+                <span>{apt.hospital?.name || apt.hospitalName || "Hospital"}</span>
+              </div>
+              <div className="info-row">
+                <b>Specialty</b>
+                <span>{apt.specialty?.name || apt.specialtyName || apt.doctor?.specialty || "Specialty"}</span>
+              </div>
+            </div>
+
+            <div className="appointment-side">
+              <div className="info-row">
+                <b>Date</b>
+                <span>{formatDate(apt.date)} — {formatTime(apt.time)}</span>
+              </div>
+              <div className="info-row">
+                <b>Status</b>
+                <span className={`status-text ${apt.status?.toLowerCase()}`}>
+                  {apt.status}
+                </span>
+              </div>
+            </div>
           </div>
-        );
+
+          <div className="appointment-actions">
+            <button 
+              className="appointment-btn reschedule-btn"
+              onClick={() => handleReschedule(apt)}
+            >
+              Reschedule
+            </button>
+
+            <button 
+              className="appointment-btn cancel-btn"
+              onClick={() => handleCancel(apt.id)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
       case "history":
         if (!historyList || historyList.length === 0) {

@@ -374,3 +374,43 @@ body {
   gap: 10px;
   margin-top: 20px;
 }
+
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.audit-table thead tr {
+  background-color: #3b5998;
+  color: var(--white);
+  text-align: left;
+  font-weight: 600;
+}
+
+.audit-table th, .audit-table td {
+  padding: 15px 20px;
+  font-size: 14px;
+}
+
+.audit-table th {
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.audit-table tbody tr {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.audit-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.audit-table tbody tr:hover {
+  background-color: var(--bg-light);
+}

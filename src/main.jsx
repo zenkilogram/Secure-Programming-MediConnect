@@ -10,7 +10,7 @@ import './Admin.css';
 import App from './App.jsx';
 import Login from './login.jsx';
 import Register from './register.jsx';
-import Booking from './Booking.jsx';
+import Booking from './booking.jsx';
 import AboutUs from './aboutus.jsx';
 import Profile from './profile.jsx';
 import Specialities from './specialities.jsx';
@@ -25,6 +25,7 @@ import ManageHospitals from './pages/ManageHospitals.jsx';
 import EditHospital from './pages/EditHospital.jsx';
 import AddDoctor from './pages/AddDoctor.jsx';
 import AddHospital from './pages/AddHospital';
+import AuditLogPage from './pages/AuditLogPage.jsx';
 
 // Komponen Placeholder untuk halaman yang belum jadi
 const ComingSoon = ({ page }) => (
@@ -61,8 +62,7 @@ const AppRoutes = () => (
       <Route path="/admin/hospitals/:id/edit" element={<EditHospital />} />
 
       {/* Others */}
-      <Route path="/admin/appointments" element={<ComingSoon page="Appointments" />} />
-      <Route path="/admin/logs" element={<ComingSoon page="Logs" />} />
+      <Route path="/admin/logs" element={<AuditLogPage />} />
       
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" />} />

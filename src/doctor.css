@@ -19,4 +19,74 @@
   border-radius: 6px;
   color: white;
   cursor: pointer;
+  transition: background 0.3s;
+}
+
+.find-btn:disabled {
+  background: #a9b9fd; 
+  cursor: not-allowed;
+}
+
+
+.results-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+h3 {
+  color: #3d5afe;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.doctor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.doctor-card {
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.doctor-name {
+  font-weight: bold;
+  color: #1a237e;
+  margin: 0 0 5px 0;
+  font-size: 1.1em;
+}
+
+.doctor-details {
+  font-size: 0.9em;
+  color: #616161;
+  margin: 0 0 5px 0;
+}
+
+.doctor-timing {
+  font-size: 0.9em;
+  color: #333;
+  margin: 0;
+}
+
+.status-message {
+  color: #555;
+  font-style: italic;
+  padding: 10px;
+  background-color: #fffde7;
+  border: 1px solid #ffe082;
+  border-radius: 4px;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-weight: bold;
+  padding: 10px;
+  background-color: #ffebee;
+  border: 1px solid #ef9a9a;
+  border-radius: 4px;
 }

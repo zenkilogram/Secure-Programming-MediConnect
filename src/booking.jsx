@@ -10,31 +10,12 @@ function Booking() {
   const [loading, setLoading] = useState(false);
   const [hospitals, setHospitals] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [specialties, setSpecialties] = useState([]);
   const [availableTimes, setAvailableTimes] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
-  
-  // Static specialties data
-  const specialties = [
-    { id: 1, name: "Allergy & Immunology" },
-    { id: 2, name: "Cardiology" },
-    { id: 3, name: "Dental" },
-    { id: 4, name: "Dermatology" },
-    { id: 5, name: "Endocrinology" },
-    { id: 6, name: "ENT (Ear Nose Throat)" },
-    { id: 7, name: "General" },
-    { id: 8, name: "Hematology" },
-    { id: 9, name: "Neurology" },
-    { id: 10, name: "OBGYN" },
-    { id: 11, name: "Ophthalmology" },
-    { id: 12, name: "Orthopedics" },
-    { id: 13, name: "Pediatrics" },
-    { id: 14, name: "Pulmonology" },
-    { id: 15, name: "Psychiatry" },
-    { id: 16, name: "Rehabilitation" }
-  ];
 
   const [formData, setFormData] = useState({
     hospital_id: "",
@@ -42,12 +23,9 @@ function Booking() {
     doctor_id: "",
     date: "",
     time: "",
-    fullName: "",
-    phone: "",
-    dob: "",
+    notes: "", // tambahkan notes
   });
 
-  // Check login status
   useEffect(() => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
@@ -55,105 +33,138 @@ function Booking() {
     if (token) {
       setIsLoggedIn(true);
       if (role === "admin") setIsAdmin(true);
-    } else {
-      // Redirect ke login jika belum login
-      alert("Please login first to book an appointment");
-      navigate("/login");
     }
-  }, [navigate]);
+  }, []);
 
-  // Fetch hospitals dari backend
   useEffect(() => {
-    if (isLoggedIn) {
-      fetchHospitals();
-    }
-  }, [isLoggedIn]);
+    fetchHospitals();
+    fetchSpecialties();
+  }, []);
 
-  // Fetch doctors ketika specialty atau hospital berubah
   useEffect(() => {
-    if (formData.specialty_id && formData.hospital_id && isLoggedIn) {
+    if (formData.specialty_id && formData.hospital_id) {
       fetchDoctors(formData.specialty_id, formData.hospital_id);
+    } else {
+      setDoctors([]);
     }
-  }, [formData.specialty_id, formData.hospital_id, isLoggedIn]);
+  }, [formData.specialty_id, formData.hospital_id]);
 
-  // Fetch available times ketika doctor dan date berubah
   useEffect(() => {
-    if (formData.doctor_id && formData.date && isLoggedIn) {
+    if (formData.doctor_id && formData.date) {
       fetchAvailableTimes(formData.doctor_id, formData.date);
+    } else {
+      setAvailableTimes([]);
     }
-  }, [formData.doctor_id, formData.date, isLoggedIn]);
+  }, [formData.doctor_id, formData.date]);
 
+  // Fetch real hospitals from database
   const fetchHospitals = async () => {
     try {
-      const response = await api.get("/api/hospitals");
+      const response = await api.get("/hospitals");
+      console.log("🏥 Hospitals from DB:", response.data);
       setHospitals(response.data);
     } catch (error) {
       console.error("Error fetching hospitals:", error);
-      setHospitals([
-        { id: 1, name: "Primaya Hospital" },
-        { id: 2, name: "Hermina Hospital" },
-        { id: 3, name: "Siloam Hospital" },
+      alert("Failed to load hospitals");
+    }
+  };
+
+  // Fetch real specialties from database (jika ada endpoint-nya)
+  const fetchSpecialties = async () => {
+    try {
+      // Jika ada endpoint specialties, gunakan itu
+      const response = await api.get("/specialties");
+      setSpecialties(response.data);
+    } catch (error) {
+      console.log("No specialties endpoint, using default");
+      // Fallback ke default specialties
+      setSpecialties([
+        { id: 1, name: "Allergy & Immunology" },
+        { id: 2, name: "Cardiology" },
+        { id: 3, name: "Dental" },
+        { id: 4, name: "Dermatology" },
+        { id: 5, name: "Endocrinology" },
+        { id: 6, name: "ENT (Ear Nose Throat)" },
+        { id: 7, name: "General" },
+        { id: 8, name: "Hematology" },
+        { id: 9, name: "Neurology" },
+        { id: 10, name: "OBGYN" },
+        { id: 11, name: "Ophthalmology" },
+        { id: 12, name: "Orthopedics" },
+        { id: 13, name: "Pediatrics" },
+        { id: 14, name: "Pulmonology" },
+        { id: 15, name: "Psychiatry" },
+        { id: 16, name: "Rehabilitation" }
       ]);
     }
   };
 
+  // Fetch real doctors from database based on specialty and hospital
   const fetchDoctors = async (specialtyId, hospitalId) => {
-    try {
-      const response = await api.get(`/api/doctors?specialty_id=${specialtyId}&hospital_id=${hospitalId}`);
-      setDoctors(response.data);
-    } catch (error) {
-      console.error("Error fetching doctors:", error);
-      const dummyDoctors = getDummyDoctors(specialtyId);
-      setDoctors(dummyDoctors);
-    }
-  };
+  try {
+    const specialtyName = specialties.find(s => s.id == specialtyId)?.name;
+    console.log(`🔍 Fetching doctors for specialty: ${specialtyName}, hospital: ${hospitalId}`);
+    
+    const response = await api.get(`/doctors?hospital_id=${hospitalId}&specialty=${specialtyName}`);
+    console.log("👨‍⚕️ Doctors from DB:", response.data);
+    setDoctors(response.data);
+  } catch (error) {
+    console.error("Error fetching doctors:", error);
+    setDoctors([]);
+  }
+};
 
   const fetchAvailableTimes = async (doctorId, date) => {
     try {
-      const response = await api.get(`/api/available-times?doctor_id=${doctorId}&date=${date}`);
+      const response = await api.get(`/available-times?doctor_id=${doctorId}&date=${date}`);
       setAvailableTimes(response.data);
     } catch (error) {
       console.error("Error fetching available times:", error);
+      // Default available times
       setAvailableTimes([
         { time: "09:00", status: "available" },
         { time: "10:00", status: "available" },
         { time: "11:00", status: "available" },
         { time: "13:00", status: "available" },
-        { time: "14:00", status: "booked" },
+        { time: "14:00", status: "available" },
         { time: "15:00", status: "available" },
       ]);
     }
   };
 
-  const getDummyDoctors = (specialtyId) => {
-    const specialty = specialties.find(s => s.id == specialtyId);
-    if (!specialty) return [];
-    
-    const doctorNames = {
-      1: ["Dr. Ahmad Rizki", "Dr. Sari Dewi"],
-      2: ["Dr. Budi Santoso", "Dr. Maya Sari"],
-      3: ["Dr. Citra Lestari", "Dr. Doni Pratama"],
-      4: ["Dr. Eka Putri", "Dr. Farhan Maulana"],
-      5: ["Dr. Gita Santoso", "Dr. Hendra Wijaya"],
-      6: ["Dr. Indra Kurniawan", "Dr. Julia Anastasia"],
-      7: ["Dr. Kevin Pratama", "Dr. Lina Marlina"],
-      8: ["Dr. Muhammad Ali", "Dr. Nina Sari"],
-      9: ["Dr. Oscar Wijaya", "Dr. Putri Anggraini"],
-      10: ["Dr. Queen Alexandria", "Dr. Rudi Hermawan"],
-      11: ["Dr. Siti Rahayu", "Dr. Toni Setiawan"],
-      12: ["Dr. Umar Faruq", "Dr. Vera Indah"],
-      13: ["Dr. William Tan", "Dr. Xena Alexandra"],
-      14: ["Dr. Yuni Sartika", "Dr. Zaki Ahmad"],
-      15: ["Dr. Anna Maria", "Dr. Benny Kurniawan"],
-      16: ["Dr. Clara Putri", "Dr. David Lee"]
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-    return doctorNames[specialtyId]?.map((name, index) => ({
-      id: parseInt(`${specialtyId}${index + 1}`),
-      name: name,
-      specialty: specialty.name,
-      hospital_id: formData.hospital_id
-    })) || [];
+    try {
+      console.log("📤 Sending appointment data:", formData);
+      
+      // Hanya kirim data yang diperlukan backend
+      const appointmentData = {
+        hospital_id: formData.hospital_id,
+        doctor_id: formData.doctor_id,
+        date: formData.date,
+        time: formData.time,
+        notes: formData.notes || "Appointment booking"
+      };
+      
+      const response = await api.post("/appointments", appointmentData);
+      
+      console.log("✅ Appointment created:", response.data);
+      
+      if (response.status === 201) {
+        setShowSuccess(true);
+      }
+    } catch (error) {
+      console.error("❌ Booking error:", error);
+      console.log("Status:", error.response?.status);
+      console.log("Error data:", error.response?.data);
+      
+      const errorMessage = error.response?.data?.message || "Failed to book appointment. Please try again.";
+      alert(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -200,32 +211,6 @@ function Booking() {
 
   const prevStep = () => setStep(step - 1);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    // Simple validation - pastikan user sudah login
-    if (!isLoggedIn) {
-      alert("Please login first");
-      navigate("/login");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await api.post("/api/appointments", formData);
-      
-      if (response.status === 201) {
-        setShowSuccess(true);
-      }
-    } catch (error) {
-      console.error("Booking error:", error);
-      alert("Failed to book appointment. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
@@ -233,83 +218,12 @@ function Booking() {
     setIsLoggedIn(false);
     setIsAdmin(false);
     setShowDropdown(false);
-    alert("You have been logged out.");
     navigate("/");
   };
 
-  // Jika belum login, tampilkan loading atau redirect
-  if (!isLoggedIn) {
-    return (
-      <div className="loading">
-        <p>Redirecting to login...</p>
-      </div>
-    );
-  }
-
   return (
     <>
-      {/* NAVBAR */}
-      <nav className="navbar">
-        <div className="logo">MediConnect</div>
 
-        <div className="nav-links">
-          <Link to="/">Home</Link>
-          <Link to="/booking">Book an Appointment</Link>
-          <Link to="/aboutus">About Us</Link>
-          <Link to="/profile">Profile</Link>
-        </div>
-
-        {/* USER DROPDOWN */}
-        <div style={{ position: "relative" }}>
-          <button
-            onClick={() => setShowDropdown(!showDropdown)}
-            className="profile-btn"
-            style={{ background: "transparent", border: "none", cursor: "pointer", color: "white" }}
-          >
-            <FaUserCircle size={28} />
-          </button>
-
-          {showDropdown && (
-            <div
-              className="dropdown-content"
-              style={{
-                position: "absolute",
-                right: 0,
-                top: "40px",
-                background: "white",
-                minWidth: "160px",
-                borderRadius: "8px",
-                boxShadow: "0px 8px 16px rgba(0,0,0,0.2)",
-                zIndex: 999,
-              }}
-            >
-              {isLoggedIn ? (
-                <>
-                  {isAdmin && (
-                    <Link className="dropdown-item" to="/admin/doctors">
-                      <FaCog /> Dashboard
-                    </Link>
-                  )}
-
-                  <button onClick={handleLogout} className="dropdown-item logout">
-                    <FaSignOutAlt /> Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link className="dropdown-item" to="/login">
-                    <FaSignInAlt /> Login
-                  </Link>
-
-                  <Link className="dropdown-item" to="/register">Register</Link>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-      </nav>
-
-      {/* BOOKING CONTENT */}
       <div className="booking-page">
         <div className="booking-content">
           <h2>Book an Appointment</h2>
@@ -363,7 +277,9 @@ function Booking() {
                     <option value="">
                       {!formData.specialty_id || !formData.hospital_id 
                         ? "Select hospital and specialty first" 
-                        : "Select Doctor"}
+                        : doctors.length === 0
+                          ? "No doctors available"
+                          : "Select Doctor"}
                     </option>
                     {doctors.map(doctor => (
                       <option key={doctor.id} value={doctor.id}>
@@ -410,11 +326,7 @@ function Booking() {
                 </div>
 
                 <div className="form-buttons">
-                  <button
-                    type="button"
-                    className="button-next"
-                    onClick={nextStep}
-                  >
+                  <button type="button" className="button-next" onClick={nextStep}>
                     Next
                   </button>
                 </div>
@@ -423,37 +335,14 @@ function Booking() {
 
             {step === 2 && (
               <div className="form-step">
-                <div className="name-form">
-                  <label>Full Name</label>
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="number-form">
-                  <label>Phone Number</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="dob-form">
-                  <label>Date of Birth</label>
-                  <input
-                    type="date"
-                    name="dob"
-                    value={formData.dob}
-                    onChange={handleChange}
-                    required
-                  />
+                <div className="confirmation-details">
+                  <h3>Appointment Summary</h3>
+                  <p><strong>Hospital:</strong> {hospitals.find(h => h.id == formData.hospital_id)?.name}</p>
+                  <p><strong>Specialty:</strong> {specialties.find(s => s.id == formData.specialty_id)?.name}</p>
+                  <p><strong>Doctor:</strong> {doctors.find(d => d.id == formData.doctor_id)?.name}</p>
+                  <p><strong>Date:</strong> {formData.date}</p>
+                  <p><strong>Time:</strong> {formData.time}</p>
+                  {formData.notes && <p><strong>Notes:</strong> {formData.notes}</p>}
                 </div>
 
                 <div className="form-buttons">
@@ -461,7 +350,7 @@ function Booking() {
                     Back
                   </button>
                   <button type="submit" className="button-submit" disabled={loading}>
-                    {loading ? "Booking..." : "Submit Booking"}
+                    {loading ? "Booking..." : "Confirm Booking"}
                   </button>
                 </div>
               </div>
@@ -478,29 +367,16 @@ function Booking() {
               <button 
                 onClick={() => {
                   setShowSuccess(false); 
-                  navigate("/");
+                  navigate("/profile");
                 }} 
                 className="success-btn"
               >
-                Back to Home
+                View My Appointments
               </button>
             </div>
           </div>
         )}
       </div>
-
-      {/* FOOTER */}
-      <footer className="footer">
-        <div className="footer-left">
-          <div className="logo">MediConnect</div>
-          <div className="copy">© 2025 MediConnect. All rights reserved.</div>
-        </div>
-
-        <div className="footer-right">
-          <a href="#">FAQs</a>
-          <a href="#">Privacy Policy</a>
-        </div>
-      </footer>
     </>
   );
 }

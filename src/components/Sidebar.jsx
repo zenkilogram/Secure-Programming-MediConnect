@@ -5,7 +5,6 @@ import { FaUserMd, FaHospital, FaCalendarCheck, FaClipboardList } from 'react-ic
 const navItems = [
   { name: 'Edit Doctor', icon: FaUserMd, path: '/admin/doctors' },
   { name: 'Edit Hospital', icon: FaHospital, path: '/admin/hospitals' },
-  { name: 'Edit Appointment', icon: FaCalendarCheck, path: '/admin/appointments' },
   { name: 'Logs', icon: FaClipboardList, path: '/admin/logs' },
 ];
 
