@@ -211,7 +211,7 @@ function App() {
 
         <div className="footer-right">
           <a href="#">FAQs</a>
-          <a href="#">Privacy Policy</a>
+          <Link to="/privacy-policy">Privacy Policy</Link>
         </div>
       </footer>
     </>
