@@ -6,28 +6,30 @@ import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("account");
-  const [user, setUser] = useState({ name: "", email: "" }); // HAPUS PHONE DARI STATE
+  const [user, setUser] = useState({ name: "", email: "" });
   const [appointments, setAppointments] = useState([]);
   const [historyList, setHistoryList] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch data ketika page load
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
-        // 1. Fetch user data
         try {
-          const userRes = await api.get("/api/user/profile");
+          const userRes = await api.get("/me");
+          const userData = userRes.data;
           setUser({
-            name: userRes.data.fullName || userRes.data.name || "User",
-            email: userRes.data.email || "No email",
+            name: userData.name || "User",
+            email: userData.email || "No email",
           });
+          
+          localStorage.setItem("user_name", userData.name || "User");
+          localStorage.setItem("user_email", userData.email || "No email");
+          localStorage.setItem("user_id", userData.id || "");
         } catch (userErr) {
           console.error("Failed fetching user:", userErr);
-          // Fallback: ambil dari localStorage
           const userName = localStorage.getItem("user_name");
           const userEmail = localStorage.getItem("user_email");
           setUser({
@@ -36,53 +38,23 @@ export default function Profile() {
           });
         }
 
-        // 2. Fetch appointments (current/upcoming)
         try {
-          const appointmentsRes = await api.get("/api/appointments/my-appointments");
-          setAppointments(appointmentsRes.data);
+          const appointmentsRes = await api.get("/appointments");
+          if (appointmentsRes.data && Array.isArray(appointmentsRes.data)) {
+            const activeAppointments = appointmentsRes.data.filter(
+              apt => apt.status && apt.status !== "Completed" && apt.status !== "Cancelled"
+            );
+            setAppointments(activeAppointments);
+            
+            const historyData = appointmentsRes.data.filter(
+              apt => apt.status && (apt.status === "Completed" || apt.status === "Cancelled")
+            );
+            setHistoryList(historyData);
+          }
         } catch (appointmentErr) {
           console.error("Failed fetching appointments:", appointmentErr);
-          // Fallback data untuk testing
-          setAppointments([
-            {
-              id: 1,
-              doctor: "Dr. Albert",
-              hospital: "Primaya Hospital", 
-              specialty: "Cardiology",
-              date: "2024-01-20",
-              time: "10:00",
-              status: "Upcoming"
-            }
-          ]);
-        }
-
-        // 3. Fetch history (completed/cancelled appointments)
-        try {
-          const historyRes = await api.get("/api/appointments/history");
-          setHistoryList(historyRes.data);
-        } catch (historyErr) {
-          console.error("Failed fetching history:", historyErr);
-          // Fallback data untuk testing
-          setHistoryList([
-            {
-              id: 2,
-              doctor: "Dr. Sari Dewi",
-              hospital: "Hermina Hospital",
-              specialty: "Dermatology",
-              date: "2024-01-10",
-              time: "14:00",
-              status: "Completed"
-            },
-            {
-              id: 3,
-              doctor: "Dr. Budi Santoso",
-              hospital: "Siloam Hospital",
-              specialty: "Cardiology", 
-              date: "2024-01-05",
-              time: "09:00",
-              status: "Cancelled"
-            }
-          ]);
+          setAppointments([]);
+          setHistoryList([]);
         }
 
       } catch (err) {
@@ -95,34 +67,28 @@ export default function Profile() {
     fetchData();
   }, []);
 
-  // Handle Reschedule - redirect ke booking page
   const handleReschedule = (appointment) => {
-    // Simpan data appointment ke localStorage atau state management
-    // untuk pre-fill form di booking page
     localStorage.setItem('reschedule_data', JSON.stringify({
       hospital_id: appointment.hospital_id,
       specialty_id: appointment.specialty_id, 
-      doctor_id: appointment.doctor_id
+      doctor_id: appointment.doctor_id,
+      appointment_id: appointment.id
     }));
     
     navigate("/booking");
   };
 
-  // Handle Cancel Appointment
   const handleCancel = async (appointmentId) => {
     if (!window.confirm("Are you sure you want to cancel this appointment?")) {
       return;
     }
 
     try {
-      await api.put(`/api/appointments/${appointmentId}/cancel`);
+      await api.put(`/appointments/${appointmentId}/cancel`);
       
-      // Update local state
-      setAppointments(prev => prev.filter(apt => apt.id !== appointmentId));
-      
-      // Add to history
       const cancelledAppointment = appointments.find(apt => apt.id === appointmentId);
       if (cancelledAppointment) {
+        setAppointments(prev => prev.filter(apt => apt.id !== appointmentId));
         setHistoryList(prev => [{
           ...cancelledAppointment,
           status: "Cancelled"
@@ -136,9 +102,36 @@ export default function Profile() {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return dateString;
+    }
+  };
+
+  const formatTime = (timeString) => {
+    if (!timeString) return "N/A";
+    try {
+      const [hours, minutes] = timeString.split(':');
+      const hour = parseInt(hours);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour % 12 || 12;
+      return `${displayHour}:${minutes} ${ampm}`;
+    } catch (error) {
+      return timeString;
+    }
+  };
+
   const renderContent = () => {
     if (loading) {
-      return <div className="loading">Loading...</div>;
+      return <div className="loading">Loading profile data...</div>;
     }
 
     switch (activeTab) {
@@ -151,14 +144,12 @@ export default function Profile() {
                 <strong>Name</strong>
                 <p>{user.name}</p>
               </div>
-              <span className="change-text">Change</span>
             </div>
             <div className="profile-item">
               <div>
                 <strong>Email</strong>
                 <p>{user.email}</p>
               </div>
-              <span className="change-text">Change</span>
             </div>
           </>
         );
@@ -203,11 +194,9 @@ export default function Profile() {
           <div className="appointments-list">
             {appointments.map((apt) => (
               <div key={apt.id} className="appointment-wrapper">
-
                 <div className="appointment-card">
-
                   <img 
-                    src={doctorImg} 
+                    src={apt.doctor?.photo || doctorImg} 
                     alt="Doctor" 
                     className="appointment-photo" 
                   />
@@ -215,22 +204,22 @@ export default function Profile() {
                   <div className="appointment-info">
                     <div className="info-row">
                       <b>Doctor</b>
-                      <span>{apt.doctor}</span>
+                      <span>{apt.doctor?.name || apt.doctorName || "Doctor"}</span>
                     </div>
                     <div className="info-row">
                       <b>Hospital</b>
-                      <span>{apt.hospital}</span>
+                      <span>{apt.hospital?.name || apt.hospitalName || "Hospital"}</span>
                     </div>
                     <div className="info-row">
                       <b>Specialty</b>
-                      <span>{apt.specialty}</span>
+                      <span>{apt.specialty?.name || apt.specialtyName || apt.doctor?.specialty || "Specialty"}</span>
                     </div>
                   </div>
 
                   <div className="appointment-side">
                     <div className="info-row">
                       <b>Date</b>
-                      <span>{apt.date} — {apt.time}</span>
+                      <span>{formatDate(apt.date)} — {formatTime(apt.time)}</span>
                     </div>
                     <div className="info-row">
                       <b>Status</b>
@@ -239,7 +228,6 @@ export default function Profile() {
                       </span>
                     </div>
                   </div>
-
                 </div>
 
                 <div className="appointment-actions">
@@ -257,7 +245,6 @@ export default function Profile() {
                     Cancel
                   </button>
                 </div>
-
               </div>
             ))}
           </div>
@@ -281,8 +268,8 @@ export default function Profile() {
                 <div className="history-card" key={item.id}>
                   <div className="history-header">
                     <div className="history-doctor">
-                      <strong>{item.doctor}</strong>
-                      <span>{item.specialty}</span>
+                      <strong>{item.doctor?.name || item.doctorName || "Doctor"}</strong>
+                      <span>{item.specialty?.name || item.specialtyName || item.doctor?.specialty || "Specialty"}</span>
                     </div>
                     <span className={`status-badge ${item.status?.toLowerCase()}`}>
                       {item.status}
@@ -290,8 +277,8 @@ export default function Profile() {
                   </div>
                   <div className="history-details">
                     <div className="history-info">
-                      <span className="hospital">{item.hospital}</span>
-                      <span className="date-time">{item.date} at {item.time}</span>
+                      <span className="hospital">{item.hospital?.name || item.hospitalName || "Hospital"}</span>
+                      <span className="date-time">{formatDate(item.date)} at {formatTime(item.time)}</span>
                     </div>
                   </div>
                 </div>
@@ -310,6 +297,8 @@ export default function Profile() {
     localStorage.removeItem("user_name");
     localStorage.removeItem("user_email");
     localStorage.removeItem("role");
+    localStorage.removeItem("reschedule_data");
+    localStorage.removeItem("user_id");
     window.location.href = "/login";
   };
 
