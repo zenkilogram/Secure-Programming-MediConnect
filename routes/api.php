@@ -12,6 +12,7 @@ use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\FacilityController;
+use App\Http\Controllers\AuditLogController;
 
 Route::prefix('v1')->group(function () {
     Route::post('/register', [RegisteredUserController::class, 'store'])->name('api.register')->middleware('throttle:register');
@@ -41,7 +42,8 @@ Route::prefix('v1')->group(function () {
         Route::middleware('role:user')->group(function () {
             Route::apiResource('appointments', AppointmentController::class)->only(['index', 'store', 'show']);
         });
-
+	
+	Route::get('/audit-logs', [AuditLogController::class, 'index']);
         Route::get('hospitals', [HospitalController::class, 'index']);
         Route::get('hospitals/{hospital}', [HospitalController::class, 'show']);
         Route::get('doctors', [DoctorController::class, 'index']);

@@ -54,7 +54,13 @@ class DoctorController extends Controller
         }
 
         $doctor = Doctor::create($data);
-        return response()->json(['message' => 'Success', 'data' => $doctor], 201);
+		AuditLog::create([
+            		'action' => "Add doctor, " . $doctor->name,
+            		'ip_address' => request()->ip(),
+        	]);
+        
+        return response()->json($doctor, 201);
+
     }
 
     public function show(Doctor $doctor)
@@ -86,8 +92,12 @@ class DoctorController extends Controller
             $data['photo'] = $path;
         }
 
-        $doctor->update($data);
-        return response()->json(['message' => 'Updated', 'data' => $doctor]);
+	    $doctor->update($data);
+        AuditLog::create([
+            'action' => "Edit doctor, " . $doctor->name,
+            'ip_address' => request()->ip(),
+        ]);
+        return response()->json($doctor);
     }
 
     public function destroy(Doctor $doctor)
@@ -97,6 +107,12 @@ class DoctorController extends Controller
         }
         
         $doctor->delete();
+
+	AuditLog::create([
+        'action' => "Remove doctor, $doctorName",
+        'ip_address' => request()->ip(), // Ambil IP user otomatis
+        // created_at otomatis diisi Laravel
+   	 ]);
         
         return response()->json(['message' => 'Doctor deleted']);
     }
