@@ -29,11 +29,11 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        if (!$user->hasVerifiedEmail()) {
-            return response()->json([
-                'message' => 'Email is not verified. Please verify your email before logging in.'
-            ], 403);
-        }
+        // if (!$user->hasVerifiedEmail()) {
+        //     return response()->json([
+        //         'message' => 'Email is not verified. Please verify your email before logging in.'
+        //     ], 403);
+        // }
 
         // to delete old tokens to allow only one session
         $user->tokens()->delete();

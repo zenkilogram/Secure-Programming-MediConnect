@@ -31,7 +31,7 @@ class RegisteredUserController extends Controller
             'role' => $request->role ?? 'user', // default to 'user'
         ]);
 
-        $user->sendEmailVerificationNotification();
+        // $user->sendEmailVerificationNotification();
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

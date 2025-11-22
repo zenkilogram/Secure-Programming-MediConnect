@@ -30,7 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\Admin::class,
             'role' => \App\Http\Middleware\RoleMiddleware::class,
-            'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+            // 'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

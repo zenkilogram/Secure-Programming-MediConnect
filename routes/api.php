@@ -24,31 +24,31 @@ Route::prefix('v1')->group(function () {
     Route::post('/register', [RegisteredUserController::class, 'store'])->name('api.register')->middleware('throttle:register');
     Route::post('/login', [AuthenticatedSessionController::class, 'apiLogin'])->middleware('throttle:login');
 
-    Route::post('/email/verification-notification', function (Request $request) {
-        if ($request->user()->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Already verified']);
-        }
+    // Route::post('/email/verification-notification', function (Request $request) {
+    //     if ($request->user()->hasVerifiedEmail()) {
+    //         return response()->json(['message' => 'Already verified']);
+    //     }
 
-        $request->user()->sendEmailVerificationNotification();
+    //     $request->user()->sendEmailVerificationNotification();
 
-        return response()->json(['message' => 'Verification email sent']);
-    })->middleware(['auth:sanctum'])->name('verification.send');
+    //     return response()->json(['message' => 'Verification email sent']);
+    // })->middleware(['auth:sanctum'])->name('verification.send');
 
     // When user clicks the email verification link
-    Route::get('/verify-email/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
+    // Route::get('/verify-email/{id}/{hash}', function (EmailVerificationRequest $request) {
+    //     $request->fulfill();
 
-        return redirect(env('FRONTEND_URL') . '/email-verified'); 
-    })->middleware(['signed'])->name('verification.verify');
+    //     return redirect(env('FRONTEND_URL') . '/email-verified'); 
+    // })->middleware(['signed'])->name('verification.verify');
 
     Route::middleware('auth:sanctum', 'throttle:global')->group(function () {
         Route::post('/logout', [AuthenticatedSessionController::class, 'apiLogout'])->name('api.logout');
 
         Route::get('/user', fn(Request $request) => $request->user());
 
-        Route::middleware('verified')->group(function () {
+        // Route::middleware('verified')->group(function () {
 
-            Route::get('/me', [UserController::class, 'me']);
+        Route::get('/me', [UserController::class, 'me']);
             // Route::get('/me', [ProfileController::class, 'edit']);
             Route::post('/me', [ProfileController::class, 'update']);
             Route::post('/upload-image', [ImageUploadController::class, 'upload']);
@@ -74,4 +74,4 @@ Route::prefix('v1')->group(function () {
             Route::get('facilities/{facility}', [FacilityController::class, 'show']);
         });
     });
-});
+// });

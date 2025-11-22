@@ -16,23 +16,50 @@ class Admin
     {
 
         // if Not logged in
-        if (!auth()->check()) {
-            // If API request
-            if ($request->expectsJson() || $request->is('api/*')) {
+        // if (!auth()->check()) {
+        //     // If API request
+        //     if ($request->expectsJson() || $request->is('api/*')) {
+        //         return response()->json(['message' => 'Unauthorized'], 401);
+        //     }
+        //     // If web request
+        //     return redirect()->route('login');
+        // }
+
+        if ($request->expectsJson() || $request->is('api/*')) {
+
+            if (!auth('sanctum')->check()) {
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
-            // If web request
-            return redirect()->route('login');
+
+            $user = auth('sanctum')->user();
+
+        // if Not admin
+        // if ($user->role !== 'admin') {
+        //     if ($request->expectsJson() || $request->is('api/*')) {
+        //         return response()->json(['message' => 'Forbidden Access'], 403);
+        //     }
+        //     return redirect()->route('home')->with('error', 'You are not authorized to access this page.');
+        // }
+
+            if ($user->role !== 'admin') {
+                   return response()->json(['message' => 'Forbidden Access'], 403);
+                }
+
+            return $next($request);
+        }
+
+        //web requests
+        if (!auth()->check()) {
+                return redirect()->route('login');
         }
 
         $user = auth()->user();
 
-        // if Not admin
+            // Check admin role for web routes
         if ($user->role !== 'admin') {
-            if ($request->expectsJson() || $request->is('api/*')) {
-                return response()->json(['message' => 'Forbidden Access'], 403);
-            }
-            return redirect()->route('home')->with('error', 'You are not authorized to access this page.');
+            return redirect()
+                ->route('home')
+                ->with('error', 'You are not authorized to access this page.');
         }
 
         return $next($request);
