@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import "./login.css";
-import { Link, useNavigate } from "react-router-dom"; // Tambah useNavigate
-import api from "./api"; 
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
-  const navigate = useNavigate(); // Hook untuk redirect
+
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({
@@ -19,37 +20,45 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
-      const res = await api.post("/login", form);
+      const res = await fetch("http://localhost:8000/api/v1/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-      // 1. Simpan Token & User Info
-      localStorage.setItem("token", res.data.access_token);
-      
-      // Asumsi backend mengirim object user yang punya kolom 'role'
-      // Sesuaikan 'res.data.user.role' dengan respon asli backendmu jika berbeda
-      const userRole = res.data.user.role; 
-      localStorage.setItem("role", userRole); 
-      localStorage.setItem("user_name", res.data.user.name);
+      const data = await res.json();
 
-      alert("Login success!");
-
-      // 2. Logika Redirect Berdasarkan Role
-      if (userRole === 'admin') {
-        navigate("/admin/doctors"); // Admin ke Dashboard
-      } else {
-        navigate("/"); // User biasa ke Home
+      if (!res.ok) {
+        alert(data.message || "Login failed");
+        setLoading(false);
+        return;
       }
 
+      localStorage.setItem("token", data.access_token);
+
+      alert("Login successful!");
+      navigate("/dashboard");
+
     } catch (err) {
-      alert("Login failed. Cek email/password.");
-      console.log(err);
+      console.error(err);
+      alert("Server error. Please try again.");
     }
+
+    setLoading(false);
   };
 
   return (
     <div className="login-container">
       <div className="login-left">
-        <h1 className="login-title">Book Your Everyday<br />Healthcare.</h1>
+        <h1 className="login-title">
+          Book Your Everyday<br />Healthcare.
+        </h1>
       </div>
 
       <div className="login-right">
@@ -76,15 +85,13 @@ export default function Login() {
             required
           />
 
-          <div className="forgot-password">
-            <Link to="/forgot-password">Forgot password?</Link>
-          </div>
-
-          <button type="submit" className="login-btn">Login</button>
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
         </form>
 
         <p className="register-text">
-          Don’t have an account? <Link to="/register">Register</Link>
+          Don't have an account? <Link to="/register">Register</Link>
         </p>
       </div>
     </div>

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./register.css";
-import api, { getCSRFToken } from "./api";
 
 export default function Register() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -29,20 +29,11 @@ export default function Register() {
     setSuccess("");
 
     try {
-      await getCSRFToken();
-
       const res = await fetch("http://localhost:8000/api/v1/register", {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
-          "X-XSRF-TOKEN": decodeURIComponent(
-            document.cookie
-              .split("; ")
-              .find(row => row.startsWith("XSRF-TOKEN"))
-              ?.split("=")[1]
-          )
         },
         body: JSON.stringify({
           name: form.name,
@@ -68,7 +59,6 @@ export default function Register() {
 
     setLoading(false);
   };
-
 
   return (
     <div className="register-container">
