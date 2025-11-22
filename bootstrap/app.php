@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Spatie\Csp\AddCspHeaders::class,
             \App\Http\Middleware\SecureHeaders::class,
+            \App\Http\Middleware\VerifyCsrfToken::class,
         ]);
 
         $middleware->api(prepend: [
