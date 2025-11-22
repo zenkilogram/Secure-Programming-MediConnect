@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', ['admin', 'patient'])->default('patient');
+            // KITA TAMBAHKAN 'doctor' dan 'user' KE DALAM ARRAY INI
+            // Supaya database menerima saat kita input akun dokter
+            $table->enum('role', ['admin', 'patient', 'doctor', 'user'])->default('patient');
         });
     }
 
@@ -22,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->dropColumn('role');
         });
     }
 };

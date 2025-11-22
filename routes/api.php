@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+// use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -56,10 +56,12 @@ Route::prefix('v1')->group(function () {
             Route::middleware('role:admin')->group(function () {
                 Route::apiResource('users', UserController::class);
 
-                Route::apiResource('hospitals', HospitalController::class)->except(['index', 'show']);
-                Route::apiResource('doctors', DoctorController::class)->except(['index', 'show']);
-                Route::apiResource('appointments', AppointmentController::class)->only(['update', 'destroy']);
-                Route::apiResource('facilities', FacilityController::class)->except(['index', 'show']);
+                Route::apiResource('hospitals', HospitalController::class);
+                Route::apiResource('doctors', DoctorController::class);
+                Route::apiResource('facilities', FacilityController::class);
+                
+                // Appointment biasanya Admin cuma perlu lihat dan update status
+                Route::apiResource('appointments', AppointmentController::class);
             });
 
             Route::middleware('role:user')->group(function () {
