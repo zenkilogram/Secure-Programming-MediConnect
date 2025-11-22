@@ -208,11 +208,6 @@ function App() {
           <div className="logo">MediConnect</div>
           <div className="copy">© 2025 MediConnect. All rights reserved.</div>
         </div>
-
-        <div className="footer-right">
-          <a href="#">FAQs</a>
-          <Link to="/privacy-policy">Privacy Policy</Link>
-        </div>
       </footer>
     </>
   );
