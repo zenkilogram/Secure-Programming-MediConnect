@@ -7,12 +7,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
+// TAMBAHKAN EXTENDS CONTROLLER ↓
 class ProfileController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:sanctum'); 
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth:sanctum'); 
+    // }
 
     // Return the logged-in user's profile
     public function show()
