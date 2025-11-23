@@ -111,3 +111,5 @@ const AuditLogPage = () => {
         </AdminLayout>
     );
 };
+
+export default AuditLogPage;
